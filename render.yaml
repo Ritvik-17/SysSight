@@ -3,4 +3,4 @@ services:
     name: Agent1
     env: python
     buildCommand: ""
-    startCommand: "python3 agent.py"
+    startCommand: "python3 linux-agent.py"
