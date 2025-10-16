@@ -2,6 +2,9 @@ import psutil
 import time
 import json
 import platform
+import os
+
+port = int(os.environ.get("PORT", 4000))
 
 def get_system_info():
     info = {
