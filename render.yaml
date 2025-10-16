@@ -1,0 +1,6 @@
+services:
+  - type: worker
+    name: Agent1
+    env: python
+    buildCommand: ""
+    startCommand: "python3 agent.py"
