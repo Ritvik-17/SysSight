@@ -5,69 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    table { border-collapse: collapse; width: 100%; }
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+    h2 { color: #333; }
+    .agent-container { margin-bottom: 40px; border: 1px solid #ccc; border-radius: 10px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 15px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     th { background-color: #4CAF50; color: white; }
     tr:nth-child(even) { background-color: #f2f2f2; }
+    .agent-name { font-size: 20px; color: #4CAF50; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
   <h2>Agent Dashboard</h2>
-  <table id="agentTable">
-    <thead>
-      <tr>
-        <th>Hostname</th>
-        <th>CPU Usage (%)</th>
-        <th>Memory Usage (%)</th>
-        <th>Disk Usage (%)</th>
-        <th>OS</th>
-        <th>OS Version</th>
-        <th>Last Updated</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="agentsContainer"></div>
 
-<script>
-  const API_URL = "https://syssight-plqp.onrender.com/agent-data"; // Your GET route
+  <script>
+    const API_URL = "https://syssight-plqp.onrender.com/agent-data";
 
-  async function fetchAgentData() {
-    try {
-      const response = await fetch(API_URL); // GET request
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data = await response.json();
+    async function fetchAgentData() {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
 
-      const tbody = document.querySelector("#agentTable tbody");
-      tbody.innerHTML = ""; // clear existing rows
+        const container = document.getElementById("agentsContainer");
+        container.innerHTML = ""; // clear existing agent tables
 
-      data.forEach(agent => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${agent.hostname || '-'}</td>
-          <td>${agent.cpuUsage !== undefined ? agent.cpuUsage + '%' : '-'}</td>
-          <td>${agent.memoryUsage !== undefined ? agent.memoryUsage + '%' : '-'}</td>
-          <td>${agent.diskUsage !== undefined ? agent.diskUsage + '%' : '-'}</td>
-          <td>${agent.os || '-'}</td>
-          <td>${agent.os_version || '-'}</td>
-          <td>${agent.createdAt ? new Date(agent.createdAt).toLocaleString() : '-'}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+        // Group data by agentId
+        const groupedData = {};
+        data.forEach(agent => {
+          const id = agent.agentId || "Unknown Agent";
+          if (!groupedData[id]) groupedData[id] = [];
+          groupedData[id].push(agent);
+        });
 
-    } catch (err) {
-      console.error("Failed to fetch agent data:", err);
+        // Create a table for each agent
+        Object.keys(groupedData).forEach(agentId => {
+          const section = document.createElement("div");
+          section.className = "agent-container";
+          section.innerHTML = `
+            <div class="agent-name">🖥️ ${agentId}</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Hostname</th>
+                  <th>CPU Usage (%)</th>
+                  <th>Memory Usage (%)</th>
+                  <th>Disk Usage (%)</th>
+                  <th>OS</th>
+                  <th>OS Version</th>
+                  <th>Last Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${groupedData[agentId].map(agent => `
+                  <tr>
+                    <td>${agent.hostname || '-'}</td>
+                    <td>${agent.cpuUsage !== undefined ? agent.cpuUsage + '%' : '-'}</td>
+                    <td>${agent.memoryUsage !== undefined ? agent.memoryUsage + '%' : '-'}</td>
+                    <td>${agent.diskUsage !== undefined ? agent.diskUsage + '%' : '-'}</td>
+                    <td>${agent.os || '-'}</td>
+                    <td>${agent.os_version || '-'}</td>
+                    <td>${agent.createdAt ? new Date(agent.createdAt).toLocaleString() : '-'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+          container.appendChild(section);
+        });
+
+      } catch (err) {
+        console.error("Failed to fetch agent data:", err);
+      }
     }
-  }
 
-  // Initial fetch
-  fetchAgentData();
+    // Initial fetch
+    fetchAgentData();
 
-  // Refresh every 5 seconds
-  setInterval(fetchAgentData, 5000);
-</script>
-
-
+    // Refresh every 5 seconds
+    setInterval(fetchAgentData, 5000);
+  </script>
 </body>
 </html>
