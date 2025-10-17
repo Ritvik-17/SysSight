@@ -24,7 +24,7 @@ if "AgentId" not in config or not config["AgentId"]:
         json.dump(config, f, indent=4)
 
 # Extract configuration values
-SERVER_URL = config.get("ServerUrl", "https://syssight-plqp.onrender.com/agent-data")
+SERVER_URL = config.get("ServerUrl")
 INTERVAL = int(config.get("PushInterval", 5000)) // 1000  # convert ms → seconds
 PASSWORD = config.get("Password", "")
 AGENT_ID = config.get("AgentId")

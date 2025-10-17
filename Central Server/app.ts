@@ -45,7 +45,7 @@ app.get('/dashboard', (req, res) => {
 
 
 app.post('/agent-data', (req: any, res: any) => {
-  const { hostname, cpuUsage, memoryUsage } = req.body;
+  const { hostname, cpuUsage, memoryUsage,agentId } = req.body;
 
   if (!hostname || cpuUsage === undefined || memoryUsage === undefined) {
     return res.status(400).send('Invalid data');
@@ -53,7 +53,7 @@ app.post('/agent-data', (req: any, res: any) => {
 
   const timestamp = new Date().toISOString();
 
-  const agentEntry = { hostname, cpuUsage, memoryUsage, createdAt: timestamp };
+  const agentEntry = { agentId, hostname, cpuUsage, memoryUsage, createdAt: timestamp };
 
   console.log('📥 Received data from agent:', agentEntry);
 
