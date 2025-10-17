@@ -6,7 +6,7 @@ import os
 import requests  # make sure to install this with: pip install requests
 
 # Get server URL (you can update this later)
-SERVER_URL = os.environ.get("SERVER_URL", "https://syssight-plqp.onrender.com/agent-data")
+SERVER_URL = "https://syssight-plqp.onrender.com/agent-data"
 INTERVAL = int(os.environ.get("INTERVAL", 5))  # seconds between pushes
 port = int(os.environ.get("PORT", 4000))
 
