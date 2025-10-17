@@ -8,6 +8,7 @@ import requests  # make sure to install this with: pip install requests
 # Get server URL (you can update this later)
 SERVER_URL = os.environ.get("SERVER_URL", "http://localhost:4000/agent-data")
 INTERVAL = int(os.environ.get("INTERVAL", 5))  # seconds between pushes
+port = int(os.environ.get("PORT", 4000))
 
 def get_system_info():
     info = {
