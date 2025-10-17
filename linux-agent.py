@@ -11,13 +11,10 @@ INTERVAL = int(os.environ.get("INTERVAL", 5))  # seconds between pushes
 port = int(os.environ.get("PORT", 4000))
 
 def get_system_info():
-    info = {
+    info  = {
         "hostname": platform.node(),
-        "os": platform.system(),
-        "os_version": platform.version(),
-        "cpu_percent": psutil.cpu_percent(interval=1),
-        "memory_percent": psutil.virtual_memory().percent,
-        "disk_percent": psutil.disk_usage('/').percent
+        "cpuUsage": psutil.cpu_percent(interval=1),
+        "memoryUsage": psutil.virtual_memory().percent
     }
     return info
 
