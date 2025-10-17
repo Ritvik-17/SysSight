@@ -30,43 +30,44 @@
     <tbody></tbody>
   </table>
 
-  <script>
-    const API_URL = "https://syssight-plqp.onrender.com/agent-data"; // Adjust server route if needed
+<script>
+  const API_URL = "https://syssight-plqp.onrender.com/agent-data"; // Your GET route
 
-    async function fetchAgentData() {
-      try {
-        const response = await fetch(API_URL); // GET request
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
+  async function fetchAgentData() {
+    try {
+      const response = await fetch(API_URL); // GET request
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
 
-        const tbody = document.querySelector("#agentTable tbody");
-        tbody.innerHTML = "";
+      const tbody = document.querySelector("#agentTable tbody");
+      tbody.innerHTML = ""; // clear existing rows
 
-        data.forEach(agent => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${agent.hostname || '-'}</td>
-            <td>${agent.cpuUsage || '-'}</td>
-            <td>${agent.memoryUsage || '-'}</td>
-            <td>${agent.diskUsage || '-'}</td>
-            <td>${agent.os || '-'}</td>
-            <td>${agent.os_version || '-'}</td>
-            <td>${new Date(agent.createdAt).toLocaleString() || '-'}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+      data.forEach(agent => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${agent.hostname || '-'}</td>
+          <td>${agent.cpuUsage !== undefined ? agent.cpuUsage + '%' : '-'}</td>
+          <td>${agent.memoryUsage !== undefined ? agent.memoryUsage + '%' : '-'}</td>
+          <td>${agent.diskUsage !== undefined ? agent.diskUsage + '%' : '-'}</td>
+          <td>${agent.os || '-'}</td>
+          <td>${agent.os_version || '-'}</td>
+          <td>${agent.createdAt ? new Date(agent.createdAt).toLocaleString() : '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
 
-      } catch (err) {
-        console.error("Failed to fetch agent data:", err);
-      }
+    } catch (err) {
+      console.error("Failed to fetch agent data:", err);
     }
+  }
 
-    // Initial fetch
-    fetchAgentData();
+  // Initial fetch
+  fetchAgentData();
 
-    // Refresh every 5 seconds
-    setInterval(fetchAgentData, 5000);
-  </script>
+  // Refresh every 5 seconds
+  setInterval(fetchAgentData, 5000);
+</script>
+
 
 </body>
 </html>
