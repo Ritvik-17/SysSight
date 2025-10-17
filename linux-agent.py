@@ -3,8 +3,11 @@ import time
 import json
 import platform
 import os
+import requests  # make sure to install this with: pip install requests
 
-port = int(os.environ.get("PORT", 4000))
+# Get server URL (you can update this later)
+SERVER_URL = os.environ.get("SERVER_URL", "http://localhost:4000/agent-data")
+INTERVAL = int(os.environ.get("INTERVAL", 5))  # seconds between pushes
 
 def get_system_info():
     info = {
@@ -20,5 +23,12 @@ def get_system_info():
 if __name__ == "__main__":
     while True:
         data = get_system_info()
-        print(json.dumps(data, indent=2))
-        time.sleep(5)
+
+        try:
+            # Send the data to the central server
+            response = requests.post(SERVER_URL, json=data)
+            print(f"✅ Sent data to server: {response.status_code}")
+        except Exception as e:
+            print(f"❌ Failed to send data: {e}")
+
+        time.sleep(INTERVAL)
