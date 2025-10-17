@@ -4,9 +4,11 @@ import json
 import platform
 import os
 import requests
+from dotenv import load_dotenv
 
 CONFIG_PATH = "config.json"
 
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 # Load or create config.json
 if os.path.exists(CONFIG_PATH):
     with open(CONFIG_PATH, "r") as f:
@@ -25,9 +27,9 @@ if "AgentId" not in config or not config["AgentId"]:
 
 # Extract configuration values
 SERVER_URL = config.get("ServerUrl")
-INTERVAL = int(config.get("PushInterval", 5000)) // 1000  # convert ms → seconds
+INTERVAL = int(config.get("PushInterval", 10000)) // 1000  # convert ms → seconds
 PASSWORD = config.get("Password", "")
-AGENT_ID = config.get("AgentId")
+AGENT_ID = os.environ.get("AGENT_ID")
 
 def get_system_info():
     info = {
