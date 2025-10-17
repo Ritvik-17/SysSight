@@ -35,12 +35,12 @@ app.get('/dashboard', function (req, res) {
     res.sendFile(path.join(__dirname, 'public/dashboard.html'));
 });
 app.post('/agent-data', function (req, res) {
-    var _a = req.body, hostname = _a.hostname, cpuUsage = _a.cpuUsage, memoryUsage = _a.memoryUsage;
+    var _a = req.body, hostname = _a.hostname, cpuUsage = _a.cpuUsage, memoryUsage = _a.memoryUsage, agentId = _a.agentId;
     if (!hostname || cpuUsage === undefined || memoryUsage === undefined) {
         return res.status(400).send('Invalid data');
     }
     var timestamp = new Date().toISOString();
-    var agentEntry = { hostname: hostname, cpuUsage: cpuUsage, memoryUsage: memoryUsage, createdAt: timestamp };
+    var agentEntry = { agentId: agentId, hostname: hostname, cpuUsage: cpuUsage, memoryUsage: memoryUsage, createdAt: timestamp };
     console.log('📥 Received data from agent:', agentEntry);
     var allData = readAgentData();
     allData.push(agentEntry);
