@@ -1,4 +1,4 @@
-// ===== server.js =====
+
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -56,12 +56,18 @@ io.on("connection", (socket) => {
 socket.on("system_data", (payload) => {
   const timestamp = new Date().toISOString();
 
-  //Merge all metrics from payload
+
   const entry = {
     agentId: payload.agentId,
     hostname: payload.hostname || '-',
     cpuUsage: payload.cpuUsage || 0,
     memoryUsage: payload.memoryUsage || 0,
+    diskUsage: payload.diskUsage || 0,
+    netBytesSent: payload.netBytesSent || 0,
+    netBytesRecv: payload.netBytesRecv || 0,
+    load1: payload.load1 || 0,
+    load5: payload.load5 || 0,
+    load15: payload.load15 || 0,
     os: payload.os || '-',
     os_version: payload.os_version || '-',
     createdAt: timestamp

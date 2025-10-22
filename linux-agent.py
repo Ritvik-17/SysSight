@@ -56,6 +56,7 @@ def get_system_info():
         "load1": load1,
         "load5": load5,
         "load15": load15,
+        
     }
 
 # === Background sender ===
