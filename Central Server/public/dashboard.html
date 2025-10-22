@@ -29,12 +29,12 @@
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
 
-        console.log("Raw agent data:", data); // Debug: check structure
+        console.log("Raw agent data:", data); 
 
         const container = document.getElementById("agentsContainer");
-        container.innerHTML = ""; // clear previous tables
+        container.innerHTML = "";
 
-        // Group data by agentId
+
         const groupedData = {};
         data.forEach(agent => {
           const id = agent.agentId || "Unknown Agent";
@@ -42,7 +42,6 @@
           groupedData[id].push(agent);
         });
 
-        // Helper to safely get value from agent or agent.metrics
         const getMetric = (agent, key) => {
           if (agent[key] !== undefined) return agent[key];
           if (agent.metrics && agent.metrics[key] !== undefined) return agent.metrics[key];
@@ -100,11 +99,7 @@
         console.error("Failed to fetch agent data:", err);
       }
     }
-
-    // Initial fetch
     fetchAgentData();
-
-    // Auto-refresh every 5 seconds
     setInterval(fetchAgentData, 5000);
   </script>
 </body>
