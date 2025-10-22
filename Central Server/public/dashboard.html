@@ -21,7 +21,7 @@
   <div id="agentsContainer"></div>
 
   <script>
-    const API_URL = "https://syssight-plqp.onrender.com/agent-data";
+    const API_URL = "http://localhost:5000/agent-data";
 
     async function fetchAgentData() {
       try {
@@ -29,8 +29,10 @@
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
 
+        console.log("Raw agent data:", data); // Debug: check structure
+
         const container = document.getElementById("agentsContainer");
-        container.innerHTML = ""; // clear existing agent tables
+        container.innerHTML = ""; // clear previous tables
 
         // Group data by agentId
         const groupedData = {};
@@ -40,10 +42,18 @@
           groupedData[id].push(agent);
         });
 
-        // Create a table for each agent
+        // Helper to safely get value from agent or agent.metrics
+        const getMetric = (agent, key) => {
+          if (agent[key] !== undefined) return agent[key];
+          if (agent.metrics && agent.metrics[key] !== undefined) return agent.metrics[key];
+          return '-';
+        }
+
+        // Create table per agent
         Object.keys(groupedData).forEach(agentId => {
           const section = document.createElement("div");
           section.className = "agent-container";
+
           section.innerHTML = `
             <div class="agent-name">🖥️ ${agentId}</div>
             <table>
@@ -53,6 +63,11 @@
                   <th>CPU Usage (%)</th>
                   <th>Memory Usage (%)</th>
                   <th>Disk Usage (%)</th>
+                  <th>Load 1m</th>
+                  <th>Load 5m</th>
+                  <th>Load 15m</th>
+                  <th>Network Sent (Bytes)</th>
+                  <th>Network Received (Bytes)</th>
                   <th>OS</th>
                   <th>OS Version</th>
                   <th>Last Updated</th>
@@ -61,12 +76,17 @@
               <tbody>
                 ${groupedData[agentId].map(agent => `
                   <tr>
-                    <td>${agent.hostname || '-'}</td>
-                    <td>${agent.cpuUsage !== undefined ? agent.cpuUsage + '%' : '-'}</td>
-                    <td>${agent.memoryUsage !== undefined ? agent.memoryUsage + '%' : '-'}</td>
-                    <td>${agent.diskUsage !== undefined ? agent.diskUsage + '%' : '-'}</td>
-                    <td>${agent.os || '-'}</td>
-                    <td>${agent.os_version || '-'}</td>
+                    <td>${getMetric(agent, 'hostname')}</td>
+                    <td>${getMetric(agent, 'cpuUsage')}%</td>
+                    <td>${getMetric(agent, 'memoryUsage')}%</td>
+                    <td>${getMetric(agent, 'diskUsage')}%</td>
+                    <td>${getMetric(agent, 'load1')}</td>
+                    <td>${getMetric(agent, 'load5')}</td>
+                    <td>${getMetric(agent, 'load15')}</td>
+                    <td>${getMetric(agent, 'netBytesSent')}</td>
+                    <td>${getMetric(agent, 'netBytesRecv')}</td>
+                    <td>${getMetric(agent, 'os')}</td>
+                    <td>${getMetric(agent, 'os_version')}</td>
                     <td>${agent.createdAt ? new Date(agent.createdAt).toLocaleString() : '-'}</td>
                   </tr>
                 `).join('')}
@@ -84,7 +104,7 @@
     // Initial fetch
     fetchAgentData();
 
-    // Refresh every 5 seconds
+    // Auto-refresh every 5 seconds
     setInterval(fetchAgentData, 5000);
   </script>
 </body>

@@ -1,56 +1,85 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var express = require("express");
-var path = require("path");
-var fs = require("fs");
-var app = express();
-var PORT = process.env.PORT || 4000;
-app.use(express.json());
-var DataFile = path.join(__dirname, 'agent-data.json');
+// ===== server.js =====
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import path from "path";
+import fs from "fs";
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+
+const PORT = process.env.PORT || 5000;
+const __dirname = path.resolve();
+const DataFile = path.join(__dirname, "agent-data.json");
+
+//check if file exists
+if (!fs.existsSync(DataFile)) fs.writeFileSync(DataFile, "[]", "utf-8");
+
+
 function readAgentData() {
-    try {
-        if (fs.existsSync(DataFile)) {
-            var raw = fs.readFileSync(DataFile, 'utf-8');
-            return JSON.parse(raw);
-        }
-        return [];
-    }
-    catch (err) {
-        console.error('Failed to read data file:', err);
-        return [];
-    }
+  try {
+    const raw = fs.readFileSync(DataFile, "utf-8");
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error("Failed to read data file:", err);
+    return [];
+  }
 }
+
 function saveAgentData(data) {
-    try {
-        fs.writeFileSync(DataFile, JSON.stringify(data, null, 2), 'utf-8');
-    }
-    catch (err) {
-        console.error('Failed to write data file:', err);
-    }
+  try {
+    fs.writeFileSync(DataFile, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.error(" Failed to write data file:", err);
+  }
 }
-app.get('/', function (req, res) {
-    res.send('Server is running!');
+
+//Routes
+app.get("/", (_, res) => res.send("✅ Socket.IO server running!"));
+
+app.get("/dashboard", (_, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
-app.get('/dashboard', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/dashboard.html'));
+
+app.get("/agent-data", (_, res) => res.json(readAgentData()));
+
+//Changed from Long Polling to Socket.IO
+io.on("connection", (socket) => {
+  console.log(`Agent connected: ${socket.id}`);
+
+  socket.on("register_agent", (data) => {
+    console.log("📋 Registered agent:", data);
+    socket.data.agentId = data.agentId;
+  });
+
+socket.on("system_data", (payload) => {
+  const timestamp = new Date().toISOString();
+
+  //Merge all metrics from payload
+  const entry = {
+    agentId: payload.agentId,
+    hostname: payload.hostname || '-',
+    cpuUsage: payload.cpuUsage || 0,
+    memoryUsage: payload.memoryUsage || 0,
+    os: payload.os || '-',
+    os_version: payload.os_version || '-',
+    createdAt: timestamp
+  };
+
+  console.log("Received data:", entry);
+
+  const allData = readAgentData();
+  allData.push(entry);
+  saveAgentData(allData);
+
+  io.emit("dashboard_update", entry);
 });
-app.post('/agent-data', function (req, res) {
-    var _a = req.body, hostname = _a.hostname, cpuUsage = _a.cpuUsage, memoryUsage = _a.memoryUsage, agentId = _a.agentId;
-    if (!hostname || cpuUsage === undefined || memoryUsage === undefined) {
-        return res.status(400).send('Invalid data');
-    }
-    var timestamp = new Date().toISOString();
-    var agentEntry = { agentId: agentId, hostname: hostname, cpuUsage: cpuUsage, memoryUsage: memoryUsage, createdAt: timestamp };
-    console.log('📥 Received data from agent:', agentEntry);
-    var allData = readAgentData();
-    allData.push(agentEntry);
-    saveAgentData(allData);
-    res.status(200).send('Data received, logged, and stored');
+
+
+  socket.on("disconnect", () => {
+    console.log(`Agent disconnected: ${socket.id}`);
+  });
 });
-app.get('/agent-data', function (req, res) {
-    var allData = readAgentData();
-    res.json(allData);
-});
-app.listen(PORT, function () {
-    console.log("\uD83D\uDE80 Server running on port ".concat(PORT));
-});
+
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
