@@ -11,7 +11,7 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 const PORT = process.env.PORT || 5000;
 const DB_NAME = process.env.DB_NAME;
-
+const uri = process.env.MONGO_URI;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 async function connectDB() {
   try {
-    console.log("🔄 Connecting to MongoDB Atlas...");
+    console.log("Connecting to MongoDB Atlas...");
     await client.connect();
 
 
@@ -59,7 +59,7 @@ async function connectDB() {
   }
 }
 
-// === Routes ===
+
 app.get("/", (_, res) => res.send("Central Server Running!"));
 
 app.get("/dashboard", (_, res) => {
@@ -101,7 +101,7 @@ app.get("/api/agents/:agentId/latest", async (req, res) => {
 
     res.json(latestMetric[0]);
   } catch (err) {
-    console.error("❌ Error fetching latest metrics:", err);
+    console.error("Error fetching latest metrics:", err);
     res.status(500).json({ error: "Failed to fetch metrics" });
   }
 });
@@ -184,7 +184,7 @@ io.on("connection", (socket) => {
         { upsert: true }
       );
     } catch (err) {
-      console.error("❌ Error updating agent status:", err);
+      console.error(" Error updating agent status:", err);
     }
   });
 
@@ -238,7 +238,7 @@ io.on("connection", (socket) => {
 
       io.emit("dashboard_update", entry);
     } catch (err) {
-      console.error("❌ Error saving metrics:", err);
+      console.error("Error saving metrics:", err);
     }
   });
 
@@ -251,7 +251,7 @@ io.on("connection", (socket) => {
       io.to(agentSocketId).emit("request_processes", data);
       console.log(`📋 Requested processes from agent: ${agentId}`);
     } else {
-      console.log(`❌ Agent not connected: ${agentId}`);
+      console.log(`Agent not connected: ${agentId}`);
       socket.emit("processes_response", {
         agentId,
         error: "Agent not connected",
@@ -267,7 +267,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", async () => {
-    console.log(`🔴 Client disconnected: ${socket.id}`);
+    console.log(` Client disconnected: ${socket.id}`);
 
 
     if (socket.data.agentId) {
