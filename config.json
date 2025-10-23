@@ -1,6 +1,6 @@
 {
     "PushInterval": 5000,
-    "ServerUrl": "https://syssight-plqp.onrender.com/agent-data",
+    "ServerUrl": "http://localhost:5000/agent-data",
     "Password": "WECKEY24",
     "AgentId": "Vishal's Imaginary Asus"
 }
