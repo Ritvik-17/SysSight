@@ -11,7 +11,7 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 const PORT = process.env.PORT || 5000;
 const DB_NAME = process.env.DB_NAME;
-const uri = process.env.MONGO_URI;
+const uri = "mongodb+srv://data:vm1@syssight.s3ejilu.mongodb.net/?retryWrites=true&w=majority&appName=SysSight"
 
 const client = new MongoClient(uri, {
   serverApi: {
