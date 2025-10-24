@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+
+import { io, Socket} from 'socket.io-client';
 import { interval, Subscription } from 'rxjs';
 import { Chart,  registerables } from 'chart.js';
 
@@ -32,15 +34,18 @@ interface AgentLog {
   templateUrl: './agent-dashboard.html',
   styleUrl: './agent-dashboard.css',
 })
+
 export class AgentDashboard implements OnInit, AfterViewInit {
   @ViewChild('cpuChart') cpuChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('memoryChart') memoryChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('diskChart') diskChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('networkChart') networkChartRef!: ElementRef<HTMLCanvasElement>;
+private socket!: Socket; // tell TS that this will be initialized later
 
   logs: AgentLog[] = [];
   latestLog: AgentLog | null = null;
-  
+  processes: any[] = [];
+  viewing: boolean = false;
   private cpuChart: Chart | null = null;
   private memoryChart: Chart | null = null;
   private diskChart: Chart | null = null;
@@ -51,7 +56,14 @@ export class AgentDashboard implements OnInit, AfterViewInit {
   private apiUrl = `http://localhost:5000/api/agents`;
   private maxDataPoints = 20; // Keep last 20 data points for charts
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute) {
+    this.socket = io('http://localhost:5000');
+    this.socket.on('process_data', (data: any) => {
+      if (data.agentId === this.agentId) {
+        this.processes = data.processes;
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.agentId = this.route.snapshot.paramMap.get('agentId');
@@ -60,10 +72,14 @@ export class AgentDashboard implements OnInit, AfterViewInit {
     this.fetchInitialData();
     this.updateSub = interval(10000).subscribe(() => this.fetchNewData());
   }
+    ngAfterViewInit(): void {
 
-  ngAfterViewInit(): void {
-    // Initialize charts after view is ready
-    setTimeout(() => this.initializeCharts(), 100);
+    this.initializeCharts();
+  }
+
+  viewProcesses() {
+    this.viewing = true;
+    this.socket.emit('view_processes', this.agentId);
   }
 
   fetchInitialData() {
@@ -84,6 +100,8 @@ export class AgentDashboard implements OnInit, AfterViewInit {
         console.error("Error fetching initial data:", err);
       });
   }
+
+  openProcesses(){}
 
   fetchNewData() {
     if (this.logs.length === 0) return;
