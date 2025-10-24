@@ -1,15 +1,134 @@
-<div class="p-6 bg-gray-100 min-h-screen">
-  <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Agent Dashboard</h1>
+<div class="flex min-h-screen bg-gray-950 text-gray-100 font-mono">
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-<div *ngFor="let log of logs" class="bg-white p-4 rounded-2xl shadow hover:shadow-lg transition-all">
-  <p class="font-semibold text-blue-600">Agent ID: {{ log.agentId }}</p>
-  <p class="text-gray-700">Time: {{ log.time | date:'mediumTime' }}</p>
-  <div class="mt-2 flex justify-between text-sm">
-    <span class="text-green-600">CPU: {{ log.cpu }}%</span>
-    <span class="text-purple-600">Memory: {{ log.memory }}%</span>
+
+  <div class="w-2/5 p-8 border-r border-gray-800 overflow-y-auto">
+    <h1 class="text-3xl font-bold mb-8 text-green-400">SYSSIGHT</h1>
+
+    <div *ngIf="latestLog" class="space-y-8">
+
+
+      <div class="bg-gray-900 p-5 rounded-xl shadow-sm">
+        <h2 class="text-lg font-semibold text-green-400 mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+          </svg>
+          AGENT INFO
+        </h2>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-400">ID</span>
+            <span>{{ latestLog.agentId }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">HOSTNAME</span>
+            <span>{{ latestLog.hostname }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">OS</span>
+            <span>{{ latestLog.os }} {{ latestLog.os_version }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">LAST UPDATE</span>
+            <span>{{ latestLog.time | date:'medium' }}</span>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="space-y-6 pt-4">
+
+
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-green-400">CPU USAGE</h3>
+            <span class="text-xl font-bold text-green-400">{{ latestLog.cpu.toFixed(1) }}%</span>
+          </div>
+          <div class="w-full bg-gray-800 rounded h-2 overflow-hidden">
+            <div class="bg-green-500 h-2 transition-all duration-500" [style.width.%]="latestLog.cpu"></div>
+          </div>
+        </div>
+
+
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-yellow-400">MEMORY USAGE</h3>
+            <span class="text-xl font-bold text-yellow-400">{{ latestLog.memory.toFixed(1) }}%</span>
+          </div>
+          <div class="w-full bg-gray-800 rounded h-2 overflow-hidden">
+            <div class="bg-yellow-500 h-2 transition-all duration-500" [style.width.%]="latestLog.memory"></div>
+          </div>
+        </div>
+
+
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-semibold text-red-400">DISK USAGE</h3>
+            <span class="text-xl font-bold text-red-400">{{ latestLog.disk.toFixed(1) }}%</span>
+          </div>
+          <div class="w-full bg-gray-800 rounded h-2 overflow-hidden">
+            <div class="bg-red-500 h-2 transition-all duration-500" [style.width.%]="latestLog.disk"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <div>
+        <h3 class="font-semibold text-cyan-400 mb-3">SYSTEM LOAD</h3>
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <p class="text-gray-400 text-xs">1 min</p>
+            <p class="text-xl font-bold text-cyan-400">{{ latestLog.load1.toFixed(2) }}</p>
+          </div>
+          <div>
+            <p class="text-gray-400 text-xs">5 min</p>
+            <p class="text-xl font-bold text-cyan-400">{{ latestLog.load5.toFixed(2) }}</p>
+          </div>
+          <div>
+            <p class="text-gray-400 text-xs">15 min</p>
+            <p class="text-xl font-bold text-cyan-400">{{ latestLog.load15.toFixed(2) }}</p>
+          </div>
+        </div>
+      </div>
+
+
+      <div>
+        <h3 class="font-semibold text-blue-400 mb-3">NETWORK</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-400">Bytes Sent</span>
+            <span class="text-blue-400">{{ formatBytes(latestLog.netBytesSent) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Bytes Received</span>
+            <span class="text-blue-400">{{ formatBytes(latestLog.netBytesRecv) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Send Rate</span>
+            <span class="text-green-400">{{ latestLog.netSentRate / 1024 | number:'1.0-2' }} KB/s</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Receive Rate</span>
+            <span class="text-purple-400">{{ latestLog.netRecvRate / 1024 | number:'1.0-2' }} KB/s</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div *ngIf="!latestLog" class="text-center text-gray-500 mt-12">
+      <p>Loading agent data...</p>
+    </div>
   </div>
-</div>
 
+  <div class="w-3/5 p-8">
+    <h2 class="text-2xl font-bold mb-8 text-green-400">Performance Graphs</h2>
+    <div class="grid grid-cols-2 gap-6">
+      <div class="bg-gray-900 p-4 rounded-xl shadow-sm"><canvas #cpuChart></canvas></div>
+      <div class="bg-gray-900 p-4 rounded-xl shadow-sm"><canvas #memoryChart></canvas></div>
+      <div class="bg-gray-900 p-4 rounded-xl shadow-sm"><canvas #diskChart></canvas></div>
+      <div class="bg-gray-900 p-4 rounded-xl shadow-sm"><canvas #networkChart></canvas></div>
+    </div>
   </div>
 </div>
