@@ -100,6 +100,10 @@ export class AgentDashboard implements OnInit, AfterViewInit {
       });
   }
 
+  openProcesses(){
+      
+  }
+
   private transformData(d: any): AgentLog {
     return {
       agentId: d.agentId,
