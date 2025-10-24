@@ -35,7 +35,7 @@ fetchInitialData() {
 
   this.http.get<any[]>(`${this.apiUrl}/${this.agentId}/updates?after=${encodeURIComponent(afterTime)}`)
     .subscribe(data => {
-      // Transform and sort newest first
+
       this.logs = data
         .map(d => ({
           agentId: d.agentId,
@@ -51,7 +51,7 @@ fetchInitialData() {
 
 fetchNewData() {
   if (this.logs.length === 0) return;
-  const lastTime = this.logs[0].time; // newest entry is at index 0
+  const lastTime = this.logs[0].time;
 
   this.http.get<any[]>(`${this.apiUrl}/${this.agentId}/updates?after=${encodeURIComponent(lastTime)}`)
     .subscribe(newData => {
@@ -62,7 +62,7 @@ fetchNewData() {
           cpu: d.cpuUsage,
           memory: d.memoryUsage
         }));
-        // Prepend newest data to the logs
+
         this.logs = [...transformed.reverse(), ...this.logs];
       }
     });
