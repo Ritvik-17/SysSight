@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dash-board',
@@ -10,9 +11,9 @@ import { Component } from '@angular/core';
 })
 export class DashBoard {
 
-  agents:any = [];
+  agents: any = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
     this.loadAgents();
@@ -25,5 +26,9 @@ export class DashBoard {
         next: data => {this.agents = data; console.log('Agents loaded', data);},
         error: err => console.error('Error loading agents', err)
       });
+  }
+
+  onAgentClick(agentId: string) {
+    this.router.navigate(['/agent', agentId]);
   }
 }
