@@ -3,10 +3,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-<<<<<<< HEAD
-import { interval } from 'rxjs';
-import { io, Socket } from 'socket.io-client';
-=======
+
+import { io, Socket} from 'socket.io-client';
 import { interval, Subscription } from 'rxjs';
 import { Chart,  registerables } from 'chart.js';
 
@@ -29,7 +27,6 @@ interface AgentLog {
   os: string;
   os_version: string;
 }
->>>>>>> 7f9b7fc9f3edd25f0a3b12fffbe52c1723ce5fa9
 
 @Component({
   selector: 'app-agent-dashboard',
@@ -37,28 +34,18 @@ interface AgentLog {
   templateUrl: './agent-dashboard.html',
   styleUrl: './agent-dashboard.css',
 })
-<<<<<<< HEAD
-export class AgentDashboard {
 
-    private socket: Socket;
-      viewing = false;
-  processes: any[] = [];
-  showProcesses = false;
-  logs: any[] = [];
-  private updateSub?: any;
-  private agentId: string | null = null;
-  private apiUrl = `http://localhost:5000/api/agents`; // your backend route
-=======
 export class AgentDashboard implements OnInit, AfterViewInit {
   @ViewChild('cpuChart') cpuChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('memoryChart') memoryChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('diskChart') diskChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('networkChart') networkChartRef!: ElementRef<HTMLCanvasElement>;
->>>>>>> 7f9b7fc9f3edd25f0a3b12fffbe52c1723ce5fa9
+private socket!: Socket; // tell TS that this will be initialized later
 
   logs: AgentLog[] = [];
   latestLog: AgentLog | null = null;
-  
+  processes: any[] = [];
+  viewing: boolean = false;
   private cpuChart: Chart | null = null;
   private memoryChart: Chart | null = null;
   private diskChart: Chart | null = null;
@@ -85,22 +72,15 @@ export class AgentDashboard implements OnInit, AfterViewInit {
     this.fetchInitialData();
     this.updateSub = interval(10000).subscribe(() => this.fetchNewData());
   }
+    ngAfterViewInit(): void {
 
-<<<<<<< HEAD
+    this.initializeCharts();
+  }
+
   viewProcesses() {
     this.viewing = true;
     this.socket.emit('view_processes', this.agentId);
   }
-
-
-fetchInitialData() {
-  const afterTime = new Date(0).toISOString(); // safe default
-=======
-  ngAfterViewInit(): void {
-    // Initialize charts after view is ready
-    setTimeout(() => this.initializeCharts(), 100);
-  }
->>>>>>> 7f9b7fc9f3edd25f0a3b12fffbe52c1723ce5fa9
 
   fetchInitialData() {
     const afterTime = new Date(0).toISOString();
@@ -120,6 +100,8 @@ fetchInitialData() {
         console.error("Error fetching initial data:", err);
       });
   }
+
+  openProcesses(){}
 
   fetchNewData() {
     if (this.logs.length === 0) return;

@@ -2,9 +2,5 @@
     "PushInterval": 5000,
     "ServerUrl": "http://localhost:5000/agent-data",
     "Password": "WECKEY24",
-<<<<<<< HEAD
     "AgentId": "ritvik"
-=======
-    "AgentId": "Vishaldaddy"
->>>>>>> 7f9b7fc9f3edd25f0a3b12fffbe52c1723ce5fa9
 }

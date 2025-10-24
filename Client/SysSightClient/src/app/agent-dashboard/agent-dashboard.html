@@ -1,51 +1,15 @@
-<div class="p-6 bg-gray-100 min-h-screen">
-  <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Agent Dashboard</h1>
-
-  <!-- View Processes Button -->
-  <div class="text-center mb-6">
-    <button 
-      class="px-6 py-2 bg-blue-600 text-white rounded-2xl shadow hover:bg-blue-700 transition-colors"
-      (click)="viewProcesses()">
-      {{ viewing ? 'Hide System Processes' : 'View System Processes' }}
-    </button>
-  </div>
-
-  <!-- Realtime Processes Table -->
-  <div *ngIf="viewing" class="overflow-x-auto mb-8">
-    <table class="min-w-full bg-white rounded-2xl shadow-md border border-gray-200">
-      <thead>
-        <tr class="bg-gray-200 text-gray-700 text-sm uppercase">
-          <th class="py-2 px-4 text-left">PID</th>
-          <th class="py-2 px-4 text-left">Name</th>
-          <th class="py-2 px-4 text-left">CPU %</th>
-          <th class="py-2 px-4 text-left">Memory %</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let p of processes" class="hover:bg-gray-100 transition">
-          <td class="py-2 px-4 text-gray-800">{{ p.pid }}</td>
-          <td class="py-2 px-4 text-gray-800">{{ p.name }}</td>
-          <td class="py-2 px-4 text-green-600 font-semibold">{{ p.cpu }}</td>
-          <td class="py-2 px-4 text-purple-600 font-semibold">{{ p.mem }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Agent Logs Section -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div *ngFor="let log of logs" class="bg-white p-4 rounded-2xl shadow hover:shadow-lg transition-all">
-      <p class="font-semibold text-blue-600">Agent ID: {{ log.agentId }}</p>
-      <p class="text-gray-700">Time: {{ log.time | date:'mediumTime' }}</p>
-      <div class="mt-2 flex justify-between text-sm">
-        <span class="text-green-600">CPU: {{ log.cpu }}%</span>
-        <span class="text-purple-600">Memory: {{ log.memory }}%</span>
-      </div>
 <div class="flex min-h-screen bg-gray-950 text-gray-100 font-mono">
 
 
   <div class="w-2/5 p-8 border-r border-gray-800 overflow-y-auto">
-    <h1 class="text-3xl font-bold mb-8 text-green-400">SYSSIGHT</h1>
+    <h1 class="text-3xl font-bold mb-4 text-green-400">SYSSIGHT</h1>
+
+    <button
+      class="bg-green-600 hover:bg-green-500 text-white text-sm font-semibold mb-4 px-3 py-1.5 rounded-md transition"
+      (click)="openProcesses()"
+    >
+      View Processes
+    </button>
 
     <div *ngIf="latestLog" class="space-y-8">
 
@@ -58,6 +22,7 @@
           </svg>
           AGENT INFO
         </h2>
+
         <div class="space-y-2 text-sm">
           <div class="flex justify-between">
             <span class="text-gray-400">ID</span>
