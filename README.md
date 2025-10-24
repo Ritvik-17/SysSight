@@ -2,6 +2,7 @@
 
 A real-time, multi-host performance monitoring tool. This project provides a central dashboard to visualize live and historical system metrics, view running processes, and receive alerts—all powered by a lightweight agent, a Node.js backend, and an Angular frontend.
 
+Demo Video link: https://www.mediafire.com/file/r3e7ekwksudg8cn/SysSight+recording.mp4/file
 ---
 
 ## Features
