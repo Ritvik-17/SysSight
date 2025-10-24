@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { io, Socket} from 'socket.io-client';
 import { interval, Subscription } from 'rxjs';
@@ -61,7 +61,7 @@ private socket!: Socket; // tell TS that this will be initialized later
   private apiUrl = `http://localhost:5000/api/agents`;
   private maxDataPoints = 20; // Keep last 20 data points for charts
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) {
+  constructor(private http: HttpClient, private route: ActivatedRoute,  private router: Router ) {
     this.socket = io('http://localhost:5000');
     this.socket.on('process_data', (data: any) => {
       if (data.agentId === this.agentId) {
@@ -106,7 +106,11 @@ private socket!: Socket; // tell TS that this will be initialized later
       });
   }
 
-  openProcesses(){}
+  openProcesses(){
+      if (this.agentId) {
+    this.router.navigate([`/process/${this.agentId}`]);
+  }     
+  }
 
   fetchNewData() {
     if (this.logs.length === 0) return;
