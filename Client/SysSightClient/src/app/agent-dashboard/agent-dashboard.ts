@@ -26,6 +26,8 @@ interface AgentLog {
   load15: number;
   os: string;
   os_version: string;
+
+
 }
 
 @Component({
@@ -46,6 +48,9 @@ private socket!: Socket; // tell TS that this will be initialized later
   latestLog: AgentLog | null = null;
   processes: any[] = [];
   viewing: boolean = false;
+  showAlert = false;
+  alertMessage = '';
+
   private cpuChart: Chart | null = null;
   private memoryChart: Chart | null = null;
   private diskChart: Chart | null = null;
@@ -116,10 +121,6 @@ private socket!: Socket; // tell TS that this will be initialized later
           this.updateCharts();
         }
       });
-  }
-
-  openProcesses(){
-      
   }
 
   private transformData(d: any): AgentLog {
@@ -289,6 +290,25 @@ private socket!: Socket; // tell TS that this will be initialized later
     this.networkChart.data.datasets[0].data = reversedLogs.map(log => log.netSentRate / 1024);
     this.networkChart.data.datasets[1].data = reversedLogs.map(log => log.netRecvRate / 1024);
     this.networkChart.update('none');
+
+if (this.latestLog) {
+  const cpu = this.latestLog.cpu;
+  const memory = this.latestLog.memory;
+
+  if (cpu > 35 || memory > 85) {
+    this.showAlert = true;
+    if (cpu > 35 && memory > 85) {
+      this.alertMessage = `High CPU (${cpu.toFixed(1)}%) and Memory (${memory.toFixed(1)}%) usage detected!`;
+    } else if (cpu > 35) {
+      this.alertMessage = `High CPU usage detected: ${cpu.toFixed(1)}%`;
+    } else {
+      this.alertMessage = `High Memory usage detected: ${memory.toFixed(1)}%`;
+    }
+  } else {
+    this.showAlert = false;
+  }
+}
+
   }
 
   formatBytes(bytes: number): string {
@@ -298,5 +318,6 @@ private socket!: Socket; // tell TS that this will be initialized later
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
+  
 
 }
