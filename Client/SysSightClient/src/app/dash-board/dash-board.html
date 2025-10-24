@@ -1,0 +1,31 @@
+<div class="p-4">
+  <h2 class="text-xl font-bold mb-4">Agent Status</h2>
+
+  <table class="min-w-full border border-gray-300 rounded-xl overflow-hidden">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-2 text-left">Status</th>
+        <th class="px-4 py-2 text-left">Agent ID</th>
+        <th class="px-4 py-2 text-left">Hostname</th>
+        <th class="px-4 py-2 text-left">OS</th>
+        <th class="px-4 py-2 text-left">Last Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let agent of agents" class="border-t hover:bg-gray-50">
+        <td class="px-4 py-2">
+          <span [ngClass]="{
+            'text-green-600 font-bold': agent.status === 'Online',
+            'text-red-600 font-bold': agent.status === 'Offline'
+          }">
+            {{ agent.status }}
+          </span>
+        </td>
+        <td class="px-4 py-2">{{ agent.agentId }}</td>
+        <td class="px-4 py-2">{{ agent.hostname }}</td>
+        <td class="px-4 py-2">{{ agent.os }}</td>
+        <td class="px-4 py-2">{{ agent.lastUpdated | date:'medium' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

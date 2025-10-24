@@ -1,0 +1,6 @@
+{
+    "PushInterval": 5000,
+    "ServerUrl": "http://localhost:5000/agent-data",
+    "Password": "WECKEY24",
+    "AgentId": "Vishal's Imaginary Asus"
+}
