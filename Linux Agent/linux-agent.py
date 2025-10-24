@@ -124,6 +124,26 @@ def handle_process_request(data):
     except Exception as e:
         print(f"Error gathering processes: {e}")
 
+@sio.on("send_processes")
+def send_processes():
+    print("Server requested processes")
+    while True:
+        processes = []
+        for p in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
+            try:
+                info = p.info
+                processes.append({
+                    "pid": info['pid'],
+                    "name": info['name'],
+                    "cpu": round(info['cpu_percent'], 2),
+                    "mem": round(info['memory_percent'], 2)
+                })
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        print( processes)
+        sio.emit("process_data", {"agentId": config["AgentId"], "processes": processes})
+        time.sleep(5)  # send every 5 seconds
+
 if __name__ == "__main__":
     try:
         print(f"Connecting to {SERVER_URL} as Agent '{agent_id}'...")

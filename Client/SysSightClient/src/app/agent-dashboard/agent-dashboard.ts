@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { interval } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
 
 @Component({
   selector: 'app-agent-dashboard',
@@ -11,13 +12,25 @@ import { interval } from 'rxjs';
   styleUrl: './agent-dashboard.css',
 })
 export class AgentDashboard {
-logs: any[] = [];
+
+    private socket: Socket;
+      viewing = false;
+  processes: any[] = [];
+  showProcesses = false;
+  logs: any[] = [];
   private updateSub?: any;
   private agentId: string | null = null;
   private apiUrl = `http://localhost:5000/api/agents`; // your backend route
 
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute) {
+    this.socket = io('http://localhost:5000');
+    this.socket.on('process_data', (data: any) => {
+      if (data.agentId === this.agentId) {
+        this.processes = data.processes;
+      }
+    });
+  }
 
   ngOnInit(): void {
     // Get agentId from the URL
@@ -29,6 +42,12 @@ logs: any[] = [];
     // Update every 10 seconds
     this.updateSub = interval(10000).subscribe(() => this.fetchNewData());
   }
+
+  viewProcesses() {
+    this.viewing = true;
+    this.socket.emit('view_processes', this.agentId);
+  }
+
 
 fetchInitialData() {
   const afterTime = new Date(0).toISOString(); // safe default
