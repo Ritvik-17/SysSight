@@ -66,10 +66,9 @@ The system is composed of three main parts:
 
 ---
 
-## Project Status
+## Implemented features
 
-- **Implemented features:**  
-  Core features (real-time metrics, historical visualization, process viewer, and frontend alerts) are fully implemented.
+- Core features (real-time metrics, historical visualization, process viewer, and frontend alerts) are fully implemented.
 
 ---
 
