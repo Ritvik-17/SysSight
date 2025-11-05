@@ -73,6 +73,15 @@ The system is composed of three main parts:
 
 ---
 
+## Project Screenshots
+
+<img width="956" height="440" alt="syssight2" src="https://github.com/user-attachments/assets/40be68ec-ea0e-48cc-a86c-7defe2565326" />
+<img width="940" height="429" alt="syssight1" src="https://github.com/user-attachments/assets/072b2dc9-4e6e-46e7-8c21-b4a312b96a2a" />
+<img width="942" height="428" alt="syssight" src="https://github.com/user-attachments/assets/fc0a5e6b-0903-47f5-9c2b-84fb41ddd610" />
+
+
+---
+
 ## Hosted At
 
 https://syssight-plqp.onrender.com/dashboard
